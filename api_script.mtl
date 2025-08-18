@@ -1,0 +1,31 @@
+{{#namespaces}}
+- name: {{namespace}}
+  type: table
+  desc: {{description}}
+
+  members:
+{{#files}}
+{{#entries}}
+  - name: {{name}}
+    type: {{type}}
+    desc: {{#summary}}{{summary}} {{/summary}}{{#description}}{{description}}{{/description}}
+    {{#has_params}}
+    parameters:
+    {{#params}}
+    - name: {{name}}
+      type: {{type}}
+{{#description}}      desc: {{description}}{{/description}}
+  {{/params}}
+  {{/has_params}}
+  {{#has_returns}}
+    returns:
+  {{#returns}}
+    - name: {{name}}
+      type: {{type}}
+{{#description}}      desc: {{description}}{{/description}}
+  {{/returns}}
+  {{/has_returns}}
+
+{{/entries}}
+{{/files}}
+{{/namespaces}}
