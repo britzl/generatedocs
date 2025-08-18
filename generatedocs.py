@@ -377,7 +377,10 @@ def generate(directory):
 def run():
     script_dir = os.path.dirname(__file__)
     extension_dir = sys.argv[1]
+    api_dir = os.path.join(extension_dir, "api")
     build_dir = os.path.abspath("build")
+    os.makedirs(api_dir, exist_ok=True)
+    os.makedirs(build_dir, exist_ok=True)
 
     namespaces = generate(os.path.abspath(extension_dir))
 
@@ -388,7 +391,7 @@ def run():
         json.dump(api, f, indent=4, sort_keys=True)
 
     render(api, os.path.join(script_dir, "api_markdown.mtl"), os.path.join(build_dir, "api.md"))
-    render(api, os.path.join(script_dir, "api_script.mtl"), os.path.join(extension_dir, "api", extension_dir + ".script_api"))
+    render(api, os.path.join(script_dir, "api_script.mtl"), os.path.join(api_dir, extension_dir + ".script_api"))
 
 
 if __name__ == '__main__':
