@@ -1,6 +1,8 @@
-/**
+/** This is MyNamespace
+ * This is a long description of what the function and fields
+ * of this namespace does
  * @document
- * @namespace
+ * @namespace MyNamespace
  */
 
 /** Short summary of what this function does

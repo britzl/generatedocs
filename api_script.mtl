@@ -13,8 +13,13 @@
     parameters:
     {{#params}}
     - name: {{name}}
-      type: {{type}}
-{{#description}}      desc: {{description}}{{/description}}
+      type: {{type}}{{#description}}
+      desc: {{description}}{{/description}}
+    {{#fields}}
+      - name: {{name}}
+        type: {{type}}
+        desc: {{description}}
+    {{/fields}}
   {{/params}}
   {{/has_params}}
   {{#has_returns}}
