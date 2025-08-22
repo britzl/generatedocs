@@ -1,35 +1,35 @@
 # API reference
 
-{{#groups}}
-* {{group}}
+{{#namespaces}}
+* {{namespace}}
+{{description}}
 {{#files}}
-  * [{{#type}}{{type}}{{/type}}{{^type}}{{module}}{{/type}}](#{{#type}}{{type}}{{/type}}{{^type}}{{module}}{{/type}})
-{{/files}}
-{{/groups}}
-
-{{#groups}}
-# {{group}}
-
-{{#files}}
-## {{#type}}{{type}}{{/type}}{{^type}}{{module}}{{/type}}
-*File: `{{filename}}`*
-
-{{#file_summary}}{{file_summary}} {{/file_summary}}{{file_description}}
-{{#usage}}
-
-```lua
-{{{usage}}}```{{/usage}}
 
 {{#entries}}
+  * [{{#name}}{{name}}{{/name}}{{^type}}{{module}}{{/type}}](#{{#type}}{{type}}{{/type}}{{^type}}{{module}}{{/type}})
+{{/entries}}
+
+*File: `{{filename}}`*
+{{/files}}
+{{/namespaces}}
+
+{{#namespaces}}
+
+{{#files}}
+{{#entries}}
+
 {{#type}}
-### {{type}}.{{name}}{{#field_type}} [`{{field_type}}`]{{/field_type}}{{^field}}({{params_string}}){{/field}}
-{{/type}}
-{{^type}}
-### {{name}}{{#field_type}} [`{{field_type}}`]{{/field_type}}{{^field}}({{params_string}}){{/field}}
+### {{namespace}}.{{name}}{{#field_type}} [`{{field_type}}`]{{/field_type}}{{^field}}({{params_string}}){{/field}}
 {{/type}}
 {{#summary}}{{summary}} {{/summary}}{{description}}
 {{#usage}}```
-{{{usage}}}```{{/usage}}
+{{{usage}}}
+```{{/usage}}
+{{#examples}}```
+{{#lines}}
+{{{.}}}
+{{/lines}}
+```{{/examples}}
 {{#has_params}}
 
 PARAMS
@@ -38,9 +38,8 @@ PARAMS
 RETURNS
 {{#returns}}* `{{name}}` {{#type}}[`{{type}}`] {{/type}}- {{description}}
 {{/returns}}{{/has_returns}}
-
-{{/entries}}
 ---
+{{/entries}}
 
 {{/files}}
-{{/groups}}
+{{/namespaces}}

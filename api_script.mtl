@@ -8,26 +8,33 @@
 {{#entries}}
   - name: {{name}}
     type: {{type}}
-    desc: {{#summary}}{{summary}} {{/summary}}{{#description}}{{description}}{{/description}}
+    desc: {{#summary}}{{summary}} {{/summary}}{{#description}}{{{description}}}{{/description}}
     {{#has_params}}
     parameters:
     {{#params}}
     - name: {{name}}
       type: {{type}}{{#description}}
-      desc: {{description}}{{/description}}
+      desc: {{{description}}}{{/description}}{{#has_fields}}
+      fields:{{/has_fields}}
     {{#fields}}
       - name: {{name}}
-        type: {{type}}
-        desc: {{description}}
+        type: {{type}}{{#description}}
+        desc: {{description}}{{/description}}
     {{/fields}}
+    {{#examples}}
+      example: |
+    {{#lines}}
+      {{{.}}}
+    {{/lines}}
+    {{/examples}}
   {{/params}}
   {{/has_params}}
   {{#has_returns}}
     returns:
   {{#returns}}
     - name: {{name}}
-      type: {{type}}
-{{#description}}      desc: {{description}}{{/description}}
+      type: {{type}}{{#description}}
+      desc: {{{description}}}{{/description}}
   {{/returns}}
   {{/has_returns}}
 

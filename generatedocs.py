@@ -156,6 +156,7 @@ def process_entry(line, lines, filetype):
     entry["usage"] = None
     entry["params"] = []
     entry["returns"] = []
+    entry["examples"] = []
     entry["type"] = "function"
     while len(lines) > 0:
         line = pop_line(lines, filetype)
@@ -183,6 +184,7 @@ def process_entry(line, lines, filetype):
                 if not next_line:
                     break
                 param["fields"].append(parse_field(next_line))
+            param["has_fields"] = len(param["fields"]) > 0
             entry["params"].append(param)
         elif line.startswith("@function"):
             entry["params"].append(parse_param(line, "function"))
@@ -259,14 +261,16 @@ def process_entry(line, lines, filetype):
                     break
                 entry["usage"] = entry["usage"] + next_line + "\n"
         elif line.startswith("@example"):
-            entry["example"] = []
-            example = []
+            entry["examples"] = []
+            example = {
+                "lines": []
+            }
             while len(lines) > 0:
                 next_line = pop_line(lines, filetype, notstartswith = "@", strip = False)
                 if not next_line:
                     break
-                example.append(next_line)
-            entry["example"].append(example)
+                example["lines"].append(next_line)
+            entry["examples"].append(example)
         elif line.startswith("@"):
             m = re.match(r"\@(\w*?) (.*)", line)
             if m:
