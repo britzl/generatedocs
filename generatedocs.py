@@ -94,10 +94,15 @@ def parse_param(line, param, original = None):
     line = line.replace("@" + (param if not original else original) + " ", "")
     param_name = line.split(' ', 1)[0]
     param_desc = line.removeprefix(param_name).strip()
+    optional = False
+    if param_name.startswith("["):
+        param_name = param_name[1:-1]
+        optional = True
     return {
         "name": param_name,
         "description": capitalize(param_desc),
-        "type": None if param == "param" else param
+        "type": None if param == "param" else param,
+        "optional": optional
     }
 
 def entry_start_tokens(filetype):
@@ -368,7 +373,7 @@ def generate(directory):
                             "description": "",
                         }
                     namespaces_lookup[namespace]["files"].append(file_description)
-                    if file_description["description"]:
+                    if file_description.get("description"):
                         namespaces_lookup[namespace]["description"] = namespaces_lookup[namespace]["description"] + file_description["description"]
 
     namespaces = []

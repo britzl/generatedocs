@@ -14,7 +14,8 @@
     {{#params}}
     - name: {{name}}
       type: {{type}}{{#description}}
-      desc: {{{description}}}{{/description}}{{#has_fields}}
+      desc: {{{description}}}{{/description}}{{#optional}}
+      optional: {{{optional}}}{{/optional}}{{#has_fields}}
       fields:{{/has_fields}}
     {{#fields}}
       - name: {{name}}
