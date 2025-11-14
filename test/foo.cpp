@@ -21,6 +21,8 @@
  * @field c
  * @boolean ok
  * @number count
+ * @treturn string return_string A return value of type string
+ * spanning multiple lines
  * 
  * @example
  *   this is an example

@@ -13,8 +13,10 @@
     parameters:
     {{#params}}
     - name: {{name}}
-      type: {{type}}{{#description}}
-      desc: {{{description}}}{{/description}}{{#optional}}
+      type: {{type}}{{#paramdesc}}
+      desc: |
+      {{#lines}}
+      {{{.}}}{{/lines}}{{/paramdesc}}{{#optional}}
       optional: {{{optional}}}{{/optional}}{{#has_fields}}
       fields:{{/has_fields}}
     {{#fields}}
@@ -22,22 +24,27 @@
         type: {{type}}{{#description}}
         desc: {{description}}{{/description}}
     {{/fields}}
-    {{#examples}}
-      example: |
-    {{#lines}}
-      {{{.}}}
-    {{/lines}}
-    {{/examples}}
-  {{/params}}
-  {{/has_params}}
+    {{/params}}
+    {{/has_params}}
   {{#has_returns}}
     returns:
   {{#returns}}
     - name: {{name}}
-      type: {{type}}{{#description}}
-      desc: {{{description}}}{{/description}}
+      type: {{type}}
+      {{#returndesc}}
+      desc: |
+      {{#lines}}
+      {{{.}}}
+      {{/lines}}
+      {{/returndesc}}
   {{/returns}}
   {{/has_returns}}
+  {{#examples}}
+    example: |
+  {{#lines}}
+    {{{.}}}
+  {{/lines}}
+  {{/examples}}
 
 {{/entries}}
 {{/files}}

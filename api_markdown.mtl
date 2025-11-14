@@ -33,10 +33,10 @@
 {{#has_params}}
 
 PARAMS
-{{#params}}* `{{name}}` {{#type}}[`{{type}}`] {{/type}}- {{description}}
+{{#params}}* `{{name}}` {{#type}}[`{{type}}`] {{/type}}{{#paramdesc}}- {{#lines}}{{.}} {{/lines}}{{/paramdesc}}
 {{/params}}{{/has_params}}{{#has_returns}}
 RETURNS
-{{#returns}}* `{{name}}` {{#type}}[`{{type}}`] {{/type}}- {{description}}
+{{#returns}}* `{{name}}` {{#type}}[`{{type}}`] {{/type}}{{#returndesc}}- {{#lines}}{{{.}}} {{/lines}}{{/returndesc}}
 {{/returns}}{{/has_returns}}
 ---
 {{/entries}}

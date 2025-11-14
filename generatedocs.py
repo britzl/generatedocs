@@ -15,6 +15,11 @@ def capitalize(s):
     if len(s) == 0: return s
     return s[0].upper() + s[1:]
 
+def punctuate(s):
+    if len(s) > 0 and not s.endswith("."):
+        s = s + "."
+    return s
+
 def is_cpp(filetype):
     return filetype in ["cpp", "c", "h"]
 
@@ -90,21 +95,6 @@ def parse_field(line):
         "type": field_type
     }
 
-def parse_param(line, param, original = None):
-    line = line.replace("@" + (param if not original else original) + " ", "")
-    param_name = line.split(' ', 1)[0]
-    param_desc = line.removeprefix(param_name).strip()
-    optional = False
-    if param_name.startswith("["):
-        param_name = param_name[1:-1]
-        optional = True
-    return {
-        "name": param_name,
-        "description": capitalize(param_desc),
-        "type": None if param == "param" else param,
-        "optional": optional
-    }
-
 def entry_start_tokens(filetype):
     if is_lua(filetype):
         return [ r"^\-\-\- (.*)" ]
@@ -149,14 +139,44 @@ def pop_line(lines, filetype, startswith = None, notstartswith = None, strip = T
         lines.insert(0, original_line)
         return None
     # ignore if line starts with specified string
-    if notstartswith and line.startswith(notstartswith):
+    if notstartswith and line.strip().startswith(notstartswith):
         lines.insert(0, original_line)
         return None
     return line
 
+def parse_multiline(first, lines, filetype):
+    o = { "lines": [] }
+    if len(first) > 0:
+        o["lines"].append(first)
+    while len(lines) > 0:
+        next_line = pop_line(lines, filetype, notstartswith = "@", strip = False)
+        if not next_line:
+            break
+        o["lines"].append(next_line[1:])
+    return o
+
+
+def parse_param(line, lines, filetype, param, original = None):
+    line = line.replace("@" + (param if not original else original) + " ", "")
+    param_name = line.split(' ', 1)[0]
+    param_desc = line.removeprefix(param_name).strip()
+    optional = False
+    if param_name.startswith("["):
+        param_name = param_name[1:-1]
+        optional = True
+    param = {
+        "name": param_name,
+        "type": None if param == "param" else param,
+        "optional": optional
+    }
+    description = parse_multiline(capitalize(param_desc), lines, filetype)
+    if len(description["lines"]) > 0:
+        param["paramdesc"] = description
+    return param
+
 def process_entry(line, lines, filetype):
     entry = {}
-    entry["summary"] = capitalize(line.strip())
+    entry["summary"] = punctuate(capitalize(line.strip()))
     entry["description"] = None
     entry["usage"] = None
     entry["params"] = []
@@ -174,14 +194,14 @@ def process_entry(line, lines, filetype):
 
         # generic parameter
         if line.startswith("@param"):
-            entry["params"].append(parse_param(line, "param"))
+            entry["params"].append(parse_param(line, lines, filetype, "param"))
         # typed parameter
         elif line.startswith("@number"):
-            entry["params"].append(parse_param(line, "number"))
+            entry["params"].append(parse_param(line, lines, filetype, "number"))
         elif line.startswith("@string"):
-            entry["params"].append(parse_param(line, "string"))
+            entry["params"].append(parse_param(line, lines, filetype, "string"))
         elif line.startswith("@table"):
-            param = parse_param(line, "table")
+            param = parse_param(line, lines, filetype, "table")
             param["fields"] = []
             # read table fields on subsequent lines
             while len(lines) > 0:
@@ -192,17 +212,17 @@ def process_entry(line, lines, filetype):
             param["has_fields"] = len(param["fields"]) > 0
             entry["params"].append(param)
         elif line.startswith("@function"):
-            entry["params"].append(parse_param(line, "function"))
+            entry["params"].append(parse_param(line, lines, filetype, "function"))
         elif line.startswith("@boolean"):
-            entry["params"].append(parse_param(line, "boolean"))
+            entry["params"].append(parse_param(line, lines, filetype, "boolean"))
         elif line.startswith("@bool"):
-            entry["params"].append(parse_param(line, "boolean", original = "bool"))
+            entry["params"].append(parse_param(line, lines, filetype, "boolean", original = "bool"))
         elif line.startswith("@vec2"):
-            entry["params"].append(parse_param(line, "vec2"))
+            entry["params"].append(parse_param(line, lines, filetype, "vec2"))
         elif line.startswith("@vec3"):
-            entry["params"].append(parse_param(line, "vec3"))
+            entry["params"].append(parse_param(line, lines, filetype, "vec3"))
         elif line.startswith("@vec4"):
-            entry["params"].append(parse_param(line, "vec4"))
+            entry["params"].append(parse_param(line, lines, filetype, "vec4"))
 
         # generic return
         elif line.startswith("@return"):
@@ -213,7 +233,7 @@ def process_entry(line, lines, filetype):
                 return_desc = m.groups()[1]
                 entry["returns"].append({
                     "name": return_name,
-                    "description": capitalize(return_desc)
+                    "returndesc": capitalize(return_desc)
                 })
         # typed return
         elif line.startswith("@treturn"):
@@ -226,7 +246,7 @@ def process_entry(line, lines, filetype):
                 entry["returns"].append({
                     "name": return_name,
                     "type": return_type,
-                    "description": capitalize(return_desc)
+                    "returndesc": parse_multiline(capitalize(return_desc), lines, filetype)
                 })
         # typed parameter
         elif line.startswith("@tparam"):
@@ -239,7 +259,7 @@ def process_entry(line, lines, filetype):
                 entry["params"].append({
                     "name": param_name,
                     "type": param_type,
-                    "description": capitalize(param_desc)
+                    "paramdesc": parse_multiline(capitalize(param_desc), lines, filetype)
                 })
         elif line.startswith("@field"):
             field = parse_field(line)
@@ -259,22 +279,11 @@ def process_entry(line, lines, filetype):
             line = line.replace("@name", "").strip()
             entry["name"] = line
         elif line.startswith("@usage"):
-            entry["usage"] = line.replace("@usage", "")
-            while len(lines) > 0:
-                next_line = pop_line(lines, filetype, notstartswith = "@")
-                if not next_line:
-                    break
-                entry["usage"] = entry["usage"] + next_line + "\n"
+            line = line.replace("@usage", "")
+            entry["usage"] = parse_multiline(line, lines, filetype)
         elif line.startswith("@example"):
-            entry["examples"] = []
-            example = {
-                "lines": []
-            }
-            while len(lines) > 0:
-                next_line = pop_line(lines, filetype, notstartswith = "@", strip = False)
-                if not next_line:
-                    break
-                example["lines"].append(next_line)
+            line = line.replace("@example", "").strip()
+            example = parse_multiline(line, lines, filetype)
             entry["examples"].append(example)
         elif line.startswith("@"):
             m = re.match(r"\@(\w*?) (.*)", line)
@@ -385,6 +394,11 @@ def generate(directory):
 
 def run():
     script_dir = os.path.dirname(__file__)
+
+    if len(sys.argv) < 2:
+        print("Usage: generatedocs.py extension_dir")
+        exit(1)
+
     extension_dir = sys.argv[1]
     api_dir = os.path.join(extension_dir, "api")
     build_dir = os.path.abspath("build")
