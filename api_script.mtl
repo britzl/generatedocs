@@ -16,7 +16,7 @@
       type: {{type}}{{#paramdesc}}
       desc: |
       {{#lines}}
-      {{{.}}}{{/lines}}{{/paramdesc}}{{#optional}}
+        {{{.}}}{{/lines}}{{/paramdesc}}{{#optional}}
       optional: {{{optional}}}{{/optional}}{{#has_fields}}
       fields:{{/has_fields}}
     {{#fields}}
@@ -34,7 +34,7 @@
       {{#returndesc}}
       desc: |
       {{#lines}}
-      {{{.}}}
+        {{{.}}}
       {{/lines}}
       {{/returndesc}}
   {{/returns}}
@@ -42,7 +42,7 @@
   {{#examples}}
     example: |
   {{#lines}}
-    {{{.}}}
+      {{{.}}}
   {{/lines}}
   {{/examples}}
 
